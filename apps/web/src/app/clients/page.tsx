@@ -1,53 +1,62 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Building2 } from "lucide-react";
 import { Topbar } from "@/components/topbar";
 import { listClients } from "@/lib/api";
 import type { Client } from "@/types/entities";
 
+/* ── humanized labels for codes ─────────────────────────── */
+
+const JOB_CODE_LABELS: Record<string, string> = {
+  OW: "Owner",
+  IN: "Instructor",
+  RW: "Retail Worker",
+};
+
+const LOCATION_LABELS: Record<string, string> = {
+  "1": "Retail",
+  "2": "Beach",
+};
+
+const EMPLOYEE_TYPE_LABELS: Record<string, string> = {
+  FT: "Full Time",
+  PT: "Part Time",
+  CA: "Casual",
+};
+
+function humanize(code: string, dict: Record<string, string>): string {
+  const label = dict[code];
+  return label ? `${code} (${label})` : code;
+}
+
 /* ── tiny helpers ───────────────────────────────────────── */
 
-function Badge({ children }: { children: React.ReactNode }) {
+function Pill({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center rounded-full bg-violet-100 px-2.5 py-0.5 text-xs font-medium text-violet-700">
+    <span className="inline-flex items-center rounded-md bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-700">
       {children}
     </span>
   );
 }
 
-function SectionHeading({
-  title,
-  subtitle,
-}: {
-  title: string;
-  subtitle?: string;
-}) {
-  return (
-    <div className="mb-3">
-      <h3 className="text-sm font-semibold text-neutral-900">{title}</h3>
-      {subtitle && (
-        <p className="mt-0.5 text-xs text-neutral-500">{subtitle}</p>
-      )}
-    </div>
-  );
-}
-
 function CodeRow({ label, values }: { label: string; values: string[] }) {
+  if (values.length === 0) return null;
   return (
-    <div className="flex items-baseline gap-3">
-      <span className="w-32 shrink-0 text-xs font-medium text-neutral-500">
+    <div className="grid grid-cols-[140px_1fr] items-start gap-3">
+      <span className="pt-0.5 text-xs font-medium text-neutral-500">
         {label}
       </span>
       <div className="flex flex-wrap gap-1.5">
         {values.map((v) => (
-          <Badge key={v}>{v}</Badge>
+          <Pill key={v}>{v}</Pill>
         ))}
       </div>
     </div>
   );
 }
 
-function MappingTable({
+function MappingCard({
   title,
   map,
 }: {
@@ -58,24 +67,29 @@ function MappingTable({
   if (entries.length === 0) return null;
 
   return (
-    <div className="min-w-[200px]">
-      <h4 className="mb-2 text-xs font-semibold text-neutral-700">{title}</h4>
+    <div className="rounded-lg border border-neutral-200 bg-white p-4">
+      <h4 className="mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-500">
+        {title}
+      </h4>
       <table className="w-full text-left text-xs">
         <thead>
           <tr className="border-b border-neutral-200">
-            <th className="pb-1.5 pr-4 font-medium text-neutral-500">
+            <th className="pb-2 pr-4 font-medium text-neutral-500">
               Form Value
             </th>
-            <th className="pb-1.5 font-medium text-neutral-500">
-              PrismHR Code
-            </th>
+            <th className="pb-2 font-medium text-neutral-500">PrismHR Code</th>
           </tr>
         </thead>
         <tbody>
-          {entries.map(([formValue, code]) => (
-            <tr key={formValue} className="border-b border-neutral-100">
-              <td className="py-1.5 pr-4 text-neutral-700">{formValue}</td>
-              <td className="py-1.5 font-medium text-violet-600">{code}</td>
+          {entries.map(([formValue, code], idx) => (
+            <tr
+              key={formValue}
+              className={
+                idx < entries.length - 1 ? "border-b border-neutral-100" : ""
+              }
+            >
+              <td className="py-2 pr-4 text-neutral-700">{formValue}</td>
+              <td className="py-2 font-medium text-violet-600">{code}</td>
             </tr>
           ))}
         </tbody>
@@ -93,15 +107,24 @@ function ClientCard({ client }: { client: Client }) {
   const jobCodes = codes.job_codes ?? [];
   const employeeTypes = codes.employee_types ?? [];
 
+  const jobCodePills = jobCodes.map((c) => humanize(c, JOB_CODE_LABELS));
+  const locationPills = locations.map((c) => humanize(c, LOCATION_LABELS));
+  const employeeTypePills = employeeTypes.map((c) =>
+    humanize(c, EMPLOYEE_TYPE_LABELS),
+  );
+
   return (
     <div className="rounded-xl border border-neutral-200 bg-white shadow-sm">
       {/* header */}
       <div className="border-b border-neutral-200 px-6 py-4">
-        <div className="flex items-baseline gap-3">
+        <div className="flex items-center gap-2">
+          <Building2 className="h-5 w-5 text-neutral-400" />
           <h2 className="text-lg font-semibold text-neutral-900">
             {client.name}
           </h2>
-          <span className="text-xs text-neutral-400">ID: {client.id}</span>
+          <span className="text-sm font-normal text-neutral-400">
+            #{client.id}
+          </span>
         </div>
         {client.address && (
           <p className="mt-1 text-sm text-neutral-500">{client.address}</p>
@@ -112,43 +135,41 @@ function ClientCard({ client }: { client: Client }) {
       <div className="space-y-6 px-6 py-5">
         {/* ── Section 1: Valid Codes ── */}
         <section>
-          <SectionHeading title="Valid Codes" />
+          <h3 className="mb-3 text-sm font-semibold text-neutral-900">
+            Valid Codes
+          </h3>
           <div className="space-y-2.5">
             <CodeRow
               label="Pay Groups"
               values={[client.pay_group_constant]}
             />
-            {benefitGroups.length > 0 && (
-              <CodeRow label="Benefit Groups" values={benefitGroups} />
-            )}
-            {locations.length > 0 && (
-              <CodeRow label="Locations" values={locations} />
-            )}
-            {jobCodes.length > 0 && (
-              <CodeRow label="Job Codes" values={jobCodes} />
-            )}
-            {employeeTypes.length > 0 && (
-              <CodeRow label="Employee Types" values={employeeTypes} />
-            )}
+            <CodeRow label="Benefit Groups" values={benefitGroups} />
+            <CodeRow label="Locations" values={locationPills} />
+            <CodeRow label="Job Codes" values={jobCodePills} />
+            <CodeRow label="Employee Types" values={employeeTypePills} />
           </div>
         </section>
 
         {/* ── Section 2: Code Mappings ── */}
         <section>
-          <SectionHeading
-            title="Code Mappings"
-            subtitle="Maps text found on paper forms to PrismHR system codes"
-          />
-          <div className="flex flex-wrap gap-8">
-            <MappingTable
+          <div className="mb-3">
+            <h3 className="text-sm font-semibold text-neutral-900">
+              Code Mappings
+            </h3>
+            <p className="mt-0.5 text-xs text-neutral-500">
+              Maps text found on paper forms to PrismHR system codes
+            </p>
+          </div>
+          <div className="space-y-3">
+            <MappingCard
               title="Job Codes"
               map={client.position_title_to_job_code}
             />
-            <MappingTable
+            <MappingCard
               title="Locations"
               map={client.organization_level_to_location}
             />
-            <MappingTable
+            <MappingCard
               title="Employee Status"
               map={client.status_to_employee_type}
             />

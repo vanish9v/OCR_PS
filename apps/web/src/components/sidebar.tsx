@@ -35,8 +35,8 @@ export function Sidebar() {
                   : "text-neutral-600 hover:bg-neutral-100"
               }`}
             >
+              <span className="flex-1">{label}</span>
               <Icon className="h-4 w-4 shrink-0" />
-              {label}
             </Link>
           );
         })}
