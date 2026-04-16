@@ -1,0 +1,30 @@
+{
+  "id": "15650",
+  "name": "Jordan's Surf Shack",
+  "codes": {
+    "pay_groups": ["BI5-SAT"],
+    "benefit_groups": ["PRIMARY", "OWNER"],
+    "locations": ["1", "2"],
+    "job_codes": ["OW", "IN", "RW"]
+  },
+  "pay_group_constant": "BI5-SAT",
+  "position_title_to_job_code": {
+    "owner": "OW",
+    "instructor": "IN",
+    "retail worker": "RW"
+  },
+  "organization_level_to_location": {
+    "retail": "1",
+    "beach": "2"
+  },
+  "status_to_employee_type": {
+    "full-time": "FT",
+    "part-time": "PT",
+    "relief": "CA"
+  },
+  "benefit_group_rules": [
+    {"if_position_title_contains": "owner", "benefit_group": "OWNER"},
+    {"default": "PRIMARY"}
+  ],
+  "address": "2046 South King St, Honolulu, HI 96826"
+}

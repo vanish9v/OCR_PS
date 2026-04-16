@@ -1,0 +1,6 @@
+# apps/api/.dockerignore
+__pycache__
+*.pyc
+.pytest_cache
+.venv
+tests/

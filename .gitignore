@@ -1,0 +1,37 @@
+.env
+.env.local
+.DS_Store
+
+# uploads + sensitive data
+/data/uploads/
+/data/processed/
+
+# node
+node_modules/
+.next/
+dist/
+build/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ide
+.vscode/
+.idea/
+
+# logs
+*.log
+
+# local sqlite
+*.db
+*.sqlite
+*.sqlite3
+
+# generated
+/packages/types/generated/

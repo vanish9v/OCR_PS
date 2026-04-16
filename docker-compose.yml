@@ -1,0 +1,30 @@
+# docker-compose.yml
+services:
+  api:
+    build: ./apps/api
+    ports: ["8000:8000"]
+    environment:
+      - CLAUDE_API_KEY=${claude_api}
+      - DATABASE_URL=sqlite:////data/app.db
+      - DATA_DIR=/data
+    volumes:
+      - ./apps/api:/app
+      - ./data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys;urllib.request.urlopen('http://localhost:8000/health',timeout=2);sys.exit(0)"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  web:
+    build: ./apps/web
+    ports: ["3000:3000"]
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      api:
+        condition: service_healthy
