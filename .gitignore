@@ -28,6 +28,12 @@ venv/
 # logs
 *.log
 
+# video files (use Loom links in README instead)
+*.mp4
+*.mov
+*.webm
+*.mkv
+
 # local sqlite
 *.db
 *.sqlite
