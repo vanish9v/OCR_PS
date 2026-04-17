@@ -6,12 +6,6 @@ Automates paper new-hire packet processing for ProService Hawaii by extracting, 
 
 **Author:** Avanish Venkatesh
 
-### 🎥 Demo Video
-
-Watch the full walkthrough (~12 min): **[https://youtu.be/5yq0Qm6vIFM](https://youtu.be/5yq0Qm6vIFM)**
-
-[![ProService OCR Demo](https://img.youtube.com/vi/5yq0Qm6vIFM/maxresdefault.jpg)](https://youtu.be/5yq0Qm6vIFM)
-
 ---
 
 ## Design Philosophy
